@@ -127,3 +127,43 @@ function! ImplementAbstractFunctions()
     endif
 endfunction
 
+
+function! ImplementInterface()
+    let clazz = expand("<cword>")
+    exe "normal bb"
+    let type_imp = expand("<cword>")
+    let tags = taglist("^".clazz."$")
+    exe "ptjump " . clazz
+    try
+        wincmd P
+    catch /.*/
+        return
+    endtry
+    let @a = "" 
+    if type_imp=="extends"
+    :g/abstract.*function/ :normal "Ayy
+    else
+    :g/public function/ :normal "Ayy
+    endif
+    silent! wincmd P
+    if &previewwindow
+        bwipeout
+    endif
+    exe "normal j\"ap\"add"
+   
+endfunction
+
+
+function! CreateClass()
+    let pwd=expand("%:.:h")
+    let namespace=substitute(substitute(pwd, "src\/", "", ""), "/", "\\", "g")
+    let class_name=expand("%:t:r")
+    exe ":!mkdir -p %:h"
+    exe ":normal ggO<?php"
+    if (namespace!=".")
+        exe ":normal onamespace " . namespace .";"
+    endif
+    exe ":normal oclass " . class_name . "{}"
+    exe ":normal ko"
+endfunction
+
